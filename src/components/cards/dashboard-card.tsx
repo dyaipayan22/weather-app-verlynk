@@ -1,33 +1,30 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
-import { fetchCurrentWeather } from '../../features/weatherSlice';
-import { useAppSelector } from '../../hooks/useAppSelector';
-import CurrentWeatherCard from './current-weather-card';
-import Error from '../error';
-import Loading from '../loading';
+import Container from '../container';
+import { setCurrentCity } from '../../features/weatherSlice';
+import { MdOutlineOpenInNew } from 'react-icons/md';
 
 interface DashboardCardProps {
-  city: string;
+  currentCity: string;
 }
 
-const DashboardCard: React.FC<DashboardCardProps> = ({ city }) => {
+const DashboardCard: React.FC<DashboardCardProps> = ({ currentCity }) => {
   const dispatch = useAppDispatch();
 
-  const { weather, error } = useAppSelector((state) => state.weather);
-  useEffect(() => {
-    dispatch(fetchCurrentWeather(city));
-  }, [dispatch, city]);
+  const handleClick = () => {
+    dispatch(setCurrentCity(currentCity));
+  };
 
   return (
-    <>
-      {weather ? (
-        <CurrentWeatherCard currentWeather={weather} />
-      ) : error ? (
-        <Error message={error} />
-      ) : (
-        <Loading />
-      )}
-    </>
+    <Container>
+      <div className="w-full flex items-center justify-center gap-4 md:px-10">
+        <span className="text-3xl font-bold">{currentCity}</span>
+        <MdOutlineOpenInNew
+          onClick={handleClick}
+          className="h-6 w-6 cursor-pointer"
+        />
+      </div>
+    </Container>
   );
 };
 

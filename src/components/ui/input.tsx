@@ -1,5 +1,5 @@
 import React from 'react';
-import { FieldErrors, UseFormRegisterReturn } from 'react-hook-form';
+import { UseFormRegisterReturn } from 'react-hook-form';
 
 interface InputProps {
   id: string;
@@ -7,7 +7,6 @@ interface InputProps {
   placeholder: string;
   disabled?: boolean;
   register: UseFormRegisterReturn<string>;
-  errors?: FieldErrors;
 }
 
 const Input: React.FC<InputProps> = ({
