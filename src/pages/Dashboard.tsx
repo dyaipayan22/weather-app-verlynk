@@ -1,35 +1,33 @@
-import { useEffect, useState } from 'react';
-import CurrentWeatherCard from '../components/cards/current-weather-card';
-import { getCurrentWeather } from '../utils/getCurrentWeather';
-import { Weather } from '../types/weather';
+import { useNavigate } from 'react-router-dom';
+import DashboardCard from '../components/cards/dashboard-card';
+import Button from '../components/ui/button';
+import { useAppSelector } from '../hooks/useAppSelector';
 
 const Dashboard = () => {
-  const [cities, setCities] = useState<string[]>([]);
-  const [weather, setweather] = useState<Weather[]>([]);
+  const navigate = useNavigate();
+  const { cities } = useAppSelector((state) => state.dashboard);
 
-  useEffect(() => {
-    const listOfCities = localStorage.getItem('cities');
-    setCities(JSON.parse(listOfCities));
-  }, []);
-
-  useEffect(() => {
-    const fetchWeather = async () => {
-      const weatherData = [];
-      for (const city of cities) {
-        const cityWeather = await getCurrentWeather(city);
-        weatherData.push(cityWeather);
-      }
-      setweather(weatherData);
-    };
-    fetchWeather();
-  }, [cities]);
+  const navigateToHome = () => {
+    navigate('/');
+  };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 space-y-4">
-      {weather.map((cityWeather, index) => (
-        <CurrentWeatherCard weather={cityWeather} key={index} />
-      ))}
-    </div>
+    <>
+      {cities.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 space-y-4">
+          {cities.map((city, index) => (
+            <DashboardCard city={city} key={index} />
+          ))}
+        </div>
+      ) : (
+        <div className="w-full flex flex-col md:flex-row items-center justify-center gap-4">
+          <span className="font-bold text-2xl">
+            No cities in your dashboard
+          </span>
+          <Button label="Go back Home" onClick={navigateToHome} />
+        </div>
+      )}
+    </>
   );
 };
 

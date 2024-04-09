@@ -1,15 +1,15 @@
-import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Weather } from '../types/weather';
-import { getCurrentWeather } from '../utils/getCurrentWeather';
 import Input from '../components/ui/input';
 import Button from '../components/ui/button';
 import CurrentWeatherCard from '../components/cards/current-weather-card';
 import Container from '../components/container';
 import Error from '../components/error';
 import Loading from '../components/loading';
+import { useAppDispatch } from '../hooks/useAppDispatch';
+import { useAppSelector } from '../hooks/useAppSelector';
+import { fetchCurrentWeather } from '../features/weatherSlice';
 
 const InputCitySchema = z.object({
   city: z.string().min(1, 'Enter a city'),
@@ -18,9 +18,7 @@ const InputCitySchema = z.object({
 type InputCitySchemaType = z.infer<typeof InputCitySchema>;
 
 const Home = () => {
-  const [weather, setWeather] = useState<Weather | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
 
   const {
     register,
@@ -28,20 +26,10 @@ const Home = () => {
     formState: { errors },
   } = useForm<InputCitySchemaType>({ resolver: zodResolver(InputCitySchema) });
 
-  const onSubmit: SubmitHandler<InputCitySchemaType> = async (input) => {
-    setLoading(true);
-    setWeather(null);
-    setError(null);
-    try {
-      const data = await getCurrentWeather(input.city);
-      setError(null);
-      setWeather(data);
-    } catch (error: any) {
-      setWeather(null);
-      setError(error.message);
-    } finally {
-      setLoading(false);
-    }
+  const { weather, loading, error } = useAppSelector((state) => state.weather);
+
+  const onSubmit: SubmitHandler<InputCitySchemaType> = async (data) => {
+    dispatch(fetchCurrentWeather(data.city));
   };
 
   return (
@@ -61,7 +49,7 @@ const Home = () => {
             disabled={loading}
           />
         </div>
-        {weather && <CurrentWeatherCard weather={weather} />}
+        {weather && <CurrentWeatherCard currentWeather={weather} />}
         {error && <Error message={error} />}
         {loading && <Loading />}
       </div>
