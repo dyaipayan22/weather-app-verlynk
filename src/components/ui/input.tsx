@@ -7,7 +7,7 @@ interface InputProps {
   placeholder: string;
   disabled?: boolean;
   register: UseFormRegisterReturn<string>;
-  errors: FieldErrors;
+  errors?: FieldErrors;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -16,7 +16,6 @@ const Input: React.FC<InputProps> = ({
   placeholder,
   disabled,
   register,
-  errors,
 }) => {
   return (
     <div className="w-full relative flex flex-col">
@@ -28,7 +27,6 @@ const Input: React.FC<InputProps> = ({
         {...register}
         className={`h-10 w-full bg-white/30 rounded-[40px] outline-none border  p-4 font-medium border-gray-500`}
       />
-      <span className="absolute top-10 left-5 ">{errors.city?.message}</span>
     </div>
   );
 };
